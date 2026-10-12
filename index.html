@@ -1,1 +1,116 @@
 
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Re:QREATOR プレゼント抽選</title>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 24px 16px;
+      background: #f7f5f0;
+      color: #292929;
+      font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue",
+        "Yu Gothic", Meiryo, sans-serif;
+    }
+    .card {
+      max-width: 440px;
+      margin: 30px auto;
+      padding: 30px 22px;
+      background: #fff;
+      border-radius: 16px;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,.06);
+    }
+    .brand {
+      color: #b87832;
+      font-size: 13px;
+      letter-spacing: 3px;
+    }
+    h1 { font-size: 24px; margin: 18px 0; }
+    p { line-height: 1.8; }
+    button {
+      width: 100%;
+      margin-top: 20px;
+      padding: 16px;
+      border: 0;
+      border-radius: 8px;
+      background: #b87832;
+      color: #fff;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:disabled { opacity: .5; cursor: wait; }
+    #status { font-size: 14px; color: #666; overflow-wrap: anywhere; }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <div class="brand">Re:QREATOR</div>
+    <h1>プレゼント抽選</h1>
+    <p>日頃のご利用ありがとうございます。<br>
+      抽選に参加してプレゼントを受け取ろう。</p>
+    <p id="status">LINEとの接続を確認しています。</p>
+    <button id="drawButton" disabled>準備中...</button>
+    <form id="drawForm" method="post"
+      action="https://script.google.com/macros/s/AKfycbzGZW0F18igv7lS4iE22PUSfJl4aNJW5xgLyINHPL81ys1rTz-XzKG03kQK9foA6fcwYw/exec">
+      <input type="hidden" name="idToken" id="idToken">
+    </form>
+  </main>
+
+  <script>
+    const LIFF_ID = "1656435814-d66I3cna";
+    const button = document.getElementById("drawButton");
+    const status = document.getElementById("status");
+
+    async function start() {
+      try {
+        await liff.init({ liffId: LIFF_ID });
+
+        if (!liff.isLoggedIn()) {
+          status.textContent = "LINEログインが必要です。";
+          button.textContent = "LINEでログイン";
+          button.disabled = false;
+          button.onclick = () => liff.login();
+          return;
+        }
+
+        status.textContent = "LINEとの接続が完了しました。";
+        button.textContent = "抽選する";
+        button.disabled = false;
+        button.onclick = draw;
+      } catch (error) {
+        status.textContent =
+          "LINEとの接続に失敗しました。LIFF設定を確認してください。";
+        console.error(error);
+      }
+    }
+
+    async function draw() {
+      button.disabled = true;
+      button.textContent = "抽選準備中...";
+      status.textContent = "認証情報を確認しています。";
+
+      try {
+        const token = liff.getIDToken();
+        if (!token) {
+          throw new Error("IDトークンを取得できませんでした。");
+        }
+
+        document.getElementById("idToken").value = token;
+        document.getElementById("drawForm").submit();
+      } catch (error) {
+        status.textContent = error.message;
+        button.disabled = false;
+        button.textContent = "もう一度試す";
+      }
+    }
+
+    start();
+  </script>
+</body>
+</html>
