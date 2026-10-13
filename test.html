@@ -1,4 +1,4 @@
-```html
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -7,27 +7,24 @@
   <title>Re:QREATOR プレゼント抽選（テスト用）</title>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
       padding: 24px 16px;
       background: #f7f5f0;
       color: #292929;
-      font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue",
-        "Yu Gothic", Meiryo, sans-serif;
+      font-family: sans-serif;
     }
 
-    .card {
+    main {
       max-width: 440px;
       margin: 30px auto;
       padding: 30px 22px;
       background: #fff;
       border-radius: 16px;
       text-align: center;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, .06);
+      box-shadow: 0 4px 20px rgba(0,0,0,.06);
     }
 
     .brand {
@@ -37,53 +34,79 @@
     }
 
     h1 {
-      font-size: 24px;
-      margin: 18px 0;
+      margin: 22px 0;
+      font-size: 23px;
     }
 
-    p {
-      line-height: 1.8;
+    p { line-height: 1.8; }
+
+    label {
+      display: block;
+      margin: 24px 0 8px;
+      text-align: left;
+      font-size: 15px;
+      font-weight: bold;
+    }
+
+    input[type="text"] {
+      display: block;
+      width: 100%;
+      min-height: 50px;
+      padding: 12px;
+      border: 1px solid #b8ad9b;
+      border-radius: 8px;
+      background: #fff;
+      color: #292929;
+      font-size: 16px;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    input[type="text"]:focus {
+      outline: 2px solid #b87832;
+      outline-offset: 2px;
     }
 
     button {
+      display: block;
       width: 100%;
-      margin-top: 20px;
-      padding: 16px;
-      border: 0;
+      min-height: 52px;
+      margin-top: 22px;
+      padding: 12px;
+      border: none;
       border-radius: 8px;
       background: #b87832;
       color: #fff;
-      font-size: 17px;
+      font-size: 16px;
       font-weight: bold;
       cursor: pointer;
     }
 
     button:disabled {
-      opacity: .5;
-      cursor: wait;
+      opacity: .6;
+      cursor: not-allowed;
     }
 
     #status {
-      font-size: 14px;
-      color: #666;
+      margin-top: 18px;
       overflow-wrap: anywhere;
+      font-size: 14px;
+    }
+
+    .note {
+      margin-top: 18px;
+      color: #666;
+      font-size: 12px;
+      text-align: left;
     }
   </style>
 </head>
+
 <body>
-  <main class="card">
+  <main>
     <div class="brand">Re:QREATOR</div>
-
     <h1>プレゼント抽選（テスト用）</h1>
-
-    <p>
-      テスト専用ページです。<br>
-      本番用の抽選ページとは別に動作を確認します。
-    </p>
-
-    <p id="status">LINEとの接続を確認しています。</p>
-
-    <button id="drawButton" disabled>準備中...</button>
+    <p>会員名を入力して、抽選にご参加ください。</p>
 
     <form
       id="drawForm"
@@ -91,70 +114,111 @@
       action="https://script.google.com/macros/s/AKfycbzCvXCrrRVTd9asGKntuhjfCd3qCXJtXPXNLRivMoAwRhEh_zyv3RV1ixGsd4JuBxylmg/exec"
     >
       <input type="hidden" name="idToken" id="idToken">
+
+      <label for="memberName">会員名</label>
+      <input
+        type="text"
+        name="memberName"
+        id="memberName"
+        maxlength="80"
+        autocomplete="name"
+        placeholder="例：山田 花子"
+        required
+      >
+
+      <button id="drawButton" type="submit" disabled>
+        LINE認証中…
+      </button>
     </form>
+
+    <p id="status" aria-live="polite">
+      LINEの認証を確認しています。
+    </p>
+
+    <p class="note">
+      ※抽選はお一人様1回限りです。同じLINEアカウントで再アクセスした場合は、初回の抽選結果を表示します。
+    </p>
   </main>
 
   <script>
-    // テスト専用LIFF ID
     const LIFF_ID = "1656435814-rLbpktXX";
 
-    const button = document.getElementById("drawButton");
-    const status = document.getElementById("status");
+    const form = document.getElementById("drawForm");
+    const nameInput = document.getElementById("memberName");
+    const drawButton = document.getElementById("drawButton");
+    const statusElement = document.getElementById("status");
 
-    async function start() {
+    let liffReady = false;
+    let submitting = false;
+
+    async function initializeLiff() {
       try {
         await liff.init({ liffId: LIFF_ID });
 
         if (!liff.isLoggedIn()) {
-          status.textContent = "LINEログインが必要です。";
-          button.textContent = "LINEでログイン";
-          button.disabled = false;
-          button.onclick = () => liff.login();
+          statusElement.textContent =
+            "LINEのログイン画面に移動します。";
+          liff.login();
           return;
         }
 
-        status.textContent = "LINEとの接続が完了しました。";
-        button.textContent = "抽選する";
-        button.disabled = false;
-        button.onclick = draw;
+        const idToken = liff.getIDToken();
 
-      } catch (error) {
-        console.error("LIFF初期化エラー:", error);
-
-        status.textContent =
-          "LINEとの接続に失敗しました。LIFF設定を確認してください。";
-
-        button.disabled = true;
-        button.textContent = "接続できません";
-      }
-    }
-
-    async function draw() {
-      button.disabled = true;
-      button.textContent = "抽選準備中...";
-      status.textContent = "認証情報を確認しています。";
-
-      try {
-        const token = liff.getIDToken();
-
-        if (!token) {
-          throw new Error(
-            "IDトークンを取得できませんでした。LINEから開き直してください。"
-          );
+        if (!idToken) {
+          statusElement.textContent =
+            "LINE認証情報を取得できませんでした。LINEから開き直してください。";
+          return;
         }
 
-        document.getElementById("idToken").value = token;
-        document.getElementById("drawForm").submit();
+        document.getElementById("idToken").value = idToken;
+
+        liffReady = true;
+        drawButton.disabled = false;
+        drawButton.textContent = "抽選する";
+
+        statusElement.textContent =
+          "会員名を入力して「抽選する」を押してください。";
 
       } catch (error) {
-        status.textContent = error.message;
-        button.disabled = false;
-        button.textContent = "もう一度試す";
+        console.error(error);
+        statusElement.textContent =
+          "LINE認証に失敗しました。LINEから開き直してください。";
       }
     }
 
-    start();
+    form.addEventListener("submit", function(event) {
+      const memberName = nameInput.value.trim();
+
+      if (!liffReady) {
+        event.preventDefault();
+        statusElement.textContent =
+          "LINE認証の確認中です。しばらくお待ちください。";
+        return;
+      }
+
+      if (!memberName) {
+        event.preventDefault();
+        statusElement.textContent =
+          "会員名を入力してください。";
+        nameInput.focus();
+        return;
+      }
+
+      if (submitting) {
+        event.preventDefault();
+        return;
+      }
+
+      nameInput.value = memberName;
+      submitting = true;
+
+      drawButton.disabled = true;
+      drawButton.textContent = "処理中…";
+      statusElement.textContent =
+        "抽選結果を確認しています。画面を閉じずにお待ちください。";
+    });
+
+    initializeLiff();
   </script>
 </body>
 </html>
-```
