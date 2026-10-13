@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Re:QREATOR プレゼント抽選（テスト用）</title>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+
   <style>
     * { box-sizing: border-box; }
 
@@ -24,7 +25,7 @@
       background: #fff;
       border-radius: 16px;
       text-align: center;
-      box-shadow: 0 4px 20px rgba(0,0,0,.06);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
     }
 
     .brand {
@@ -83,7 +84,7 @@
     }
 
     button:disabled {
-      opacity: .6;
+      opacity: 0.6;
       cursor: not-allowed;
     }
 
@@ -105,7 +106,9 @@
 <body>
   <main>
     <div class="brand">Re:QREATOR</div>
+
     <h1>プレゼント抽選（テスト用）</h1>
+
     <p>会員名を入力して、抽選にご参加ください。</p>
 
     <form
@@ -113,9 +116,8 @@
       method="post"
       action="https://script.google.com/macros/s/AKfycbzCvXCrrRVTd9asGKntuhjfCd3qCXJtXPXNLRivMoAwRhEh_zyv3RV1ixGsd4JuBxylmg/exec"
     >
-      <input type="hidden" name="idToken" id="idToken">
-
       <label for="memberName">会員名</label>
+
       <input
         type="text"
         name="memberName"
@@ -125,6 +127,8 @@
         placeholder="例：山田 花子"
         required
       >
+
+      <input type="hidden" name="idToken" id="idToken">
 
       <button id="drawButton" type="submit" disabled>
         LINE認証中…
@@ -144,12 +148,57 @@
     const LIFF_ID = "1656435814-rLbpktXX";
 
     const form = document.getElementById("drawForm");
-    const nameInput = document.getElementById("memberName");
+    const memberNameInput = document.getElementById("memberName");
+    const idTokenInput = document.getElementById("idToken");
     const drawButton = document.getElementById("drawButton");
     const statusElement = document.getElementById("status");
 
     let liffReady = false;
     let submitting = false;
+    let reloginStarted = false;
+
+    // IDトークンの有効期限を確認する。
+    // 期限まで2分未満の場合も再ログインを促す。
+    function isTokenExpired(token) {
+      try {
+        const parts = token.split(".");
+        if (parts.length !== 3) return true;
+
+        const payload = parts[1]
+          .replace(/-/g, "+")
+          .replace(/_/g, "/");
+
+        const padded = payload + "=".repeat((4 - payload.length % 4) % 4);
+        const claims = JSON.parse(atob(padded));
+
+        if (!claims.exp) return true;
+
+        return Date.now() >= (claims.exp * 1000) - 120000;
+      } catch (error) {
+        return true;
+      }
+    }
+
+    // 期限切れトークンが使われている場合、LINEに再ログインする。
+    function restartLineLogin(message) {
+      if (reloginStarted) return;
+
+      reloginStarted = true;
+      liffReady = false;
+      drawButton.disabled = true;
+      drawButton.textContent = "LINE再認証中…";
+      statusElement.textContent = message;
+
+      try {
+        liff.logout();
+      } catch (error) {
+        console.error("LIFF logout error:", error);
+      }
+
+      liff.login({
+        redirectUri: window.location.href
+      });
+    }
 
     async function initializeLiff() {
       try {
@@ -158,7 +207,10 @@
         if (!liff.isLoggedIn()) {
           statusElement.textContent =
             "LINEのログイン画面に移動します。";
-          liff.login();
+
+          liff.login({
+            redirectUri: window.location.href
+          });
           return;
         }
 
@@ -170,8 +222,14 @@
           return;
         }
 
-        document.getElementById("idToken").value = idToken;
+        if (isTokenExpired(idToken)) {
+          restartLineLogin(
+            "認証情報の期限を確認しました。LINEに再ログインします。"
+          );
+          return;
+        }
 
+        idTokenInput.value = idToken;
         liffReady = true;
         drawButton.disabled = false;
         drawButton.textContent = "抽選する";
@@ -180,42 +238,52 @@
           "会員名を入力して「抽選する」を押してください。";
 
       } catch (error) {
-        console.error(error);
+        console.error("LIFF initialization error:", error);
         statusElement.textContent =
-          "LINE認証に失敗しました。LINEから開き直してください。";
+          "LINE認証に失敗しました。ページを開き直してください。";
       }
     }
 
-    form.addEventListener("submit", function(event) {
-      const memberName = nameInput.value.trim();
+    form.addEventListener("submit", async function(event) {
+      event.preventDefault();
 
-      if (!liffReady) {
-        event.preventDefault();
-        statusElement.textContent =
-          "LINE認証の確認中です。しばらくお待ちください。";
-        return;
-      }
+      if (submitting) return;
+
+      const memberName = memberNameInput.value.trim();
 
       if (!memberName) {
-        event.preventDefault();
+        statusElement.textContent = "会員名を入力してください。";
+        memberNameInput.focus();
+        return;
+      }
+
+      if (!liffReady || !liff.isLoggedIn()) {
         statusElement.textContent =
-          "会員名を入力してください。";
-        nameInput.focus();
+          "LINE認証が完了していません。ページを開き直してください。";
         return;
       }
 
-      if (submitting) {
-        event.preventDefault();
+      // 抽選ボタンを押した時点でIDトークンを取得し直す。
+      const currentToken = liff.getIDToken();
+
+      if (!currentToken || isTokenExpired(currentToken)) {
+        restartLineLogin(
+          "認証情報の期限切れを確認しました。LINEに再ログインします。"
+        );
         return;
       }
 
-      nameInput.value = memberName;
+      idTokenInput.value = currentToken;
+      memberNameInput.value = memberName;
+
       submitting = true;
-
       drawButton.disabled = true;
       drawButton.textContent = "処理中…";
       statusElement.textContent =
         "抽選結果を確認しています。画面を閉じずにお待ちください。";
+
+      // 通常のフォーム送信でGASへ渡す。
+      form.submit();
     });
 
     initializeLiff();
