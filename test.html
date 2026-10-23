@@ -27,8 +27,7 @@
       min-height: 100vh;
       padding: 24px 16px 36px;
       color: var(--ink);
-      font-family:
-        -apple-system, BlinkMacSystemFont,
+      font-family: -apple-system, BlinkMacSystemFont,
         "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
       background:
         radial-gradient(ellipse at 50% 0%, #fffefa 0%, transparent 65%),
@@ -56,9 +55,7 @@
       pointer-events: none;
     }
 
-    main > * {
-      position: relative;
-    }
+    main > * { position: relative; }
 
     .brand {
       color: #77613e;
@@ -103,18 +100,13 @@
       letter-spacing: 2px;
     }
 
-    .intro {
-      font-size: 13px;
-      line-height: 2;
-    }
+    .intro { font-size: 13px; line-height: 2; }
 
     .divider {
       width: 46px;
       height: 1px;
       margin: 23px auto;
-      background: linear-gradient(
-        90deg, transparent, var(--gold), transparent
-      );
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
     }
 
     label {
@@ -165,14 +157,8 @@
       transition: opacity .2s, transform .2s;
     }
 
-    button:active:not(:disabled) {
-      transform: translateY(1px);
-    }
-
-    button:disabled {
-      opacity: .58;
-      cursor: not-allowed;
-    }
+    button:active:not(:disabled) { transform: translateY(1px); }
+    button:disabled { opacity: .58; cursor: not-allowed; }
 
     #status {
       margin-top: 17px;
@@ -190,7 +176,7 @@
       text-align: left;
     }
 
-    /* 抽選時の全画面演出 */
+    /* 開封演出の全画面 */
     #opening {
       position: fixed;
       inset: 0;
@@ -209,7 +195,7 @@
       opacity: 0;
       visibility: hidden;
       pointer-events: none;
-      transition: opacity .35s ease, visibility .35s ease;
+      transition: opacity .45s ease, visibility .45s ease;
     }
 
     #opening.active {
@@ -218,20 +204,21 @@
       pointer-events: auto;
     }
 
-    #opening::before {
+    #opening::before,
+    #opening::after {
       position: absolute;
-      inset: 15px;
-      border: 1px solid rgba(183,147,84,.28);
       content: "";
       pointer-events: none;
     }
 
+    #opening::before {
+      inset: 15px;
+      border: 1px solid rgba(183,147,84,.28);
+    }
+
     #opening::after {
-      position: absolute;
       inset: 22px;
       border: 1px solid rgba(183,147,84,.12);
-      content: "";
-      pointer-events: none;
     }
 
     .opening-content {
@@ -244,12 +231,18 @@
       text-align: center;
     }
 
+    .opening-brand,
+    .opening-title,
+    .opening-message,
+    .opening-sub {
+      opacity: 0;
+    }
+
     .opening-brand {
       color: #76603d;
       font-family: Georgia, "Times New Roman", serif;
       font-size: 12px;
       letter-spacing: 4px;
-      opacity: 0;
     }
 
     .opening-title {
@@ -258,54 +251,131 @@
       font-family: Georgia, "Times New Roman", serif;
       font-size: 11px;
       letter-spacing: 4px;
-      opacity: 0;
     }
 
     .gift-scene {
       position: relative;
       display: grid;
-      width: 270px;
-      height: 265px;
-      margin: 12px auto 0;
+      width: 280px;
+      height: 280px;
+      margin: 10px auto 0;
       place-items: center;
-      perspective: 850px;
+      perspective: 1000px;
     }
 
     .gift-glow {
       position: absolute;
-      width: 230px;
-      height: 230px;
+      width: 205px;
+      height: 205px;
       border-radius: 50%;
       background: radial-gradient(
         circle,
-        rgba(235,210,158,.7) 0%,
-        rgba(235,210,158,.27) 35%,
-        rgba(235,210,158,0) 72%
+        rgba(255,253,232,.96) 0%,
+        rgba(235,210,158,.55) 23%,
+        rgba(235,210,158,.18) 48%,
+        transparent 73%
+      );
+      opacity: .32;
+      transform: scale(.8);
+    }
+
+    .gift-flare {
+      position: absolute;
+      z-index: 1;
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: radial-gradient(
+        circle,
+        rgba(255,255,245,.98) 0%,
+        rgba(255,237,186,.7) 24%,
+        rgba(233,196,117,.2) 55%,
+        transparent 72%
       );
       opacity: 0;
-      transform: scale(.65);
+      transform: scale(.15);
+      pointer-events: none;
     }
+
+    .rays {
+      position: absolute;
+      z-index: 1;
+      width: 230px;
+      height: 230px;
+      opacity: 0;
+      transform: scale(.7);
+      pointer-events: none;
+    }
+
+    .rays i {
+      position: absolute;
+      left: 50%;
+      bottom: 50%;
+      width: 1px;
+      height: 76px;
+      transform-origin: 50% 100%;
+      background: linear-gradient(
+        to top, transparent, rgba(193,151,73,.42), rgba(255,253,232,.88)
+      );
+    }
+
+    .rays i:nth-child(1) { transform: rotate(-72deg); height: 55px; }
+    .rays i:nth-child(2) { transform: rotate(-51deg); height: 85px; }
+    .rays i:nth-child(3) { transform: rotate(-28deg); height: 66px; }
+    .rays i:nth-child(4) { transform: rotate(-8deg); height: 96px; }
+    .rays i:nth-child(5) { transform: rotate(17deg); height: 75px; }
+    .rays i:nth-child(6) { transform: rotate(39deg); height: 91px; }
+    .rays i:nth-child(7) { transform: rotate(63deg); height: 65px; }
+    .rays i:nth-child(8) { transform: rotate(83deg); height: 48px; }
+
+    .dust {
+      position: absolute;
+      z-index: 4;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .dust i {
+      position: absolute;
+      top: 52%;
+      left: 50%;
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: #d5b36b;
+      box-shadow: 0 0 6px rgba(213,179,107,.7);
+      opacity: 0;
+    }
+
+    .dust i:nth-child(1) { --x:-86px; --y:-72px; }
+    .dust i:nth-child(2) { --x:76px; --y:-80px; }
+    .dust i:nth-child(3) { --x:-105px; --y:-15px; }
+    .dust i:nth-child(4) { --x:103px; --y:-20px; }
+    .dust i:nth-child(5) { --x:-59px; --y:52px; }
+    .dust i:nth-child(6) { --x:63px; --y:48px; }
+    .dust i:nth-child(7) { --x:-16px; --y:-103px; }
+    .dust i:nth-child(8) { --x:19px; --y:82px; }
 
     .gift-shadow {
       position: absolute;
       left: 50%;
-      bottom: 30px;
-      width: 170px;
-      height: 23px;
+      bottom: 31px;
+      width: 165px;
+      height: 20px;
       border-radius: 50%;
-      background: rgba(83,61,31,.2);
-      filter: blur(12px);
+      background: rgba(83,61,31,.18);
+      filter: blur(11px);
       transform: translateX(-50%);
-      transition: transform 1s, opacity 1s;
+      opacity: 0;
     }
 
     .gift {
       position: relative;
+      z-index: 2;
       width: 166px;
       height: 150px;
-      margin-top: 26px;
+      margin-top: 22px;
       transform-style: preserve-3d;
-      animation: giftFloat 4s ease-in-out infinite;
     }
 
     .gift-body {
@@ -315,18 +385,14 @@
       width: 150px;
       height: 98px;
       overflow: hidden;
-      border: 1px solid #b99a62;
+      border: 1px solid #cbb58a;
       background: linear-gradient(
-        110deg,
-        #c6a76c 0%,
-        #f4e7c9 24%,
-        #e6d1a1 53%,
-        #c6a267 100%
+        110deg, #d9c59e 0%, #fff7e4 22%, #f0e2c3 52%, #d7c095 100%
       );
       box-shadow:
-        inset 7px 0 10px rgba(255,255,255,.18),
+        inset 7px 0 10px rgba(255,255,255,.32),
         inset -8px 0 10px rgba(111,79,34,.08),
-        0 12px 22px rgba(137,104,49,.14);
+        0 12px 22px rgba(137,104,49,.12);
     }
 
     .gift-body::before {
@@ -335,8 +401,8 @@
       bottom: 0;
       left: 63px;
       width: 24px;
-      border-right: 1px solid rgba(151,111,52,.3);
-      border-left: 1px solid rgba(255,255,255,.48);
+      border-right: 1px solid rgba(151,111,52,.25);
+      border-left: 1px solid rgba(255,255,255,.6);
       background: linear-gradient(
         90deg, #b28a49, #f8ebcb 40%, #d1b071 78%, #b28a49
       );
@@ -349,9 +415,7 @@
       left: 0;
       right: 0;
       height: 9px;
-      background: linear-gradient(
-        180deg, rgba(255,255,255,.42), transparent
-      );
+      background: linear-gradient(180deg, rgba(255,255,255,.45), transparent);
       content: "";
     }
 
@@ -360,28 +424,24 @@
       inset: 0 auto 0 25px;
       width: 18px;
       background: linear-gradient(
-        90deg, transparent, rgba(255,255,255,.35), transparent
+        90deg, transparent, rgba(255,255,255,.38), transparent
       );
     }
 
     .gift-lid {
       position: absolute;
-      z-index: 3;
+      z-index: 4;
       top: 25px;
       left: 0;
       width: 166px;
       height: 30px;
-      border: 1px solid #b99a62;
+      border: 1px solid #c7ad77;
       background: linear-gradient(
-        105deg,
-        #c7a66a 0%,
-        #f7ebce 25%,
-        #e7d1a0 61%,
-        #bd9859 100%
+        105deg, #d7bf8e 0%, #fff5dc 25%, #e9d5aa 61%, #c5a267 100%
       );
       box-shadow:
         0 5px 8px rgba(91,66,30,.13),
-        inset 0 2px 3px rgba(255,255,255,.55);
+        inset 0 2px 3px rgba(255,255,255,.65);
       transform-origin: 12% 100%;
     }
 
@@ -389,7 +449,7 @@
       position: absolute;
       inset: 2px 0 auto;
       height: 1px;
-      background: rgba(255,255,255,.5);
+      background: rgba(255,255,255,.65);
       content: "";
     }
 
@@ -399,8 +459,8 @@
       bottom: 0;
       left: 70px;
       width: 24px;
-      border-right: 1px solid rgba(151,111,52,.3);
-      border-left: 1px solid rgba(255,255,255,.5);
+      border-right: 1px solid rgba(151,111,52,.25);
+      border-left: 1px solid rgba(255,255,255,.6);
       background: linear-gradient(
         90deg, #b28a49, #f8ebcb 40%, #d1b071 78%, #b28a49
       );
@@ -409,13 +469,13 @@
 
     .gift-ribbon {
       position: absolute;
-      z-index: 4;
+      z-index: 5;
       top: 0;
       left: 71px;
       width: 24px;
       height: 150px;
-      border-right: 1px solid rgba(151,111,52,.25);
-      border-left: 1px solid rgba(255,255,255,.5);
+      border-right: 1px solid rgba(151,111,52,.22);
+      border-left: 1px solid rgba(255,255,255,.6);
       background: linear-gradient(
         90deg, #ad8547, #f9ebc9 38%, #d7b576 75%, #ad8547
       );
@@ -424,7 +484,7 @@
 
     .gift-bow {
       position: absolute;
-      z-index: 5;
+      z-index: 6;
       top: -6px;
       left: 56px;
       width: 54px;
@@ -460,7 +520,7 @@
 
     .gift-knot {
       position: absolute;
-      z-index: 6;
+      z-index: 7;
       top: 5px;
       left: 77px;
       width: 13px;
@@ -472,66 +532,27 @@
       transform: rotate(45deg);
     }
 
-    .gift.open {
-      animation: none;
-    }
-
     .gift.open .gift-lid {
-      animation: lidOpen 1.05s 1.15s cubic-bezier(.2,.7,.2,1) forwards;
+      animation: lidOpen 1.15s 1.05s cubic-bezier(.2,.7,.2,1) forwards;
     }
 
     .gift.open .gift-bow {
-      animation: bowLift .8s 1.05s ease-out forwards;
+      animation: bowLift .72s .92s ease-in forwards;
     }
 
     .gift.open .gift-ribbon {
-      animation: ribbonDrop .9s 1.1s ease-out forwards;
+      animation: ribbonDrop .85s .98s ease-out forwards;
     }
 
     .gift.open .gift-knot {
-      animation: knotLift .75s 1.05s ease-out forwards;
-    }
-
-    .sparkle {
-      position: absolute;
-      z-index: 1;
-      color: #b99556;
-      font-family: Georgia, serif;
-      font-size: 22px;
-      opacity: 0;
-      text-shadow: 0 0 10px rgba(220,190,130,.5);
-    }
-
-    .s1 { top: 18%; left: 17%; }
-    .s2 { top: 26%; right: 16%; font-size: 17px; }
-    .s3 { top: 56%; left: 12%; font-size: 15px; }
-    .s4 { top: 59%; right: 13%; font-size: 24px; }
-    .s5 { top: 39%; right: 10%; font-size: 12px; }
-    .s6 { top: 43%; left: 10%; font-size: 13px; }
-
-    .confetti {
-      position: absolute;
-      top: -20px;
-      z-index: 1;
-      width: 5px;
-      height: 10px;
-      background: linear-gradient(180deg, #e8d5a8, #b89250);
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .confetti:nth-of-type(2n) {
-      width: 3px;
-      height: 7px;
-      background: #f3e5c4;
+      animation: knotLift .7s .92s ease-in forwards;
     }
 
     .opening-message {
-      margin-top: 8px;
+      margin-top: 0;
       color: #8e7142;
       font-size: 13px;
       letter-spacing: 2px;
-      opacity: 0;
     }
 
     .opening-sub {
@@ -539,128 +560,80 @@
       color: #a19786;
       font-size: 11px;
       letter-spacing: 1px;
-      opacity: 0;
     }
 
-    #opening.active .opening-brand {
-      animation: fadeIn .7s .1s forwards;
-    }
+    #opening.active .opening-brand { animation: fadeIn .7s .08s forwards; }
+    #opening.active .opening-title { animation: fadeIn .7s .25s forwards; }
+    #opening.active .gift { animation: giftArrive .8s .12s ease-out both; }
+    #opening.active .gift-shadow { animation: shadowIn .8s .2s forwards; }
+    #opening.active .gift-glow { animation: glowPulse 2.4s .35s ease-in-out infinite alternate; }
+    #opening.active .gift.open ~ .gift-flare { animation: flare 2s 1.8s ease-out both; }
+    #opening.active .rays { animation: raysExpand 1.7s 1.85s ease-out both; }
+    #opening.active .dust i { animation: dustFloat 1.8s 1.85s ease-out both; }
+    #opening.active .opening-message { animation: riseIn .8s 2.2s forwards; }
+    #opening.active .opening-sub { animation: fadeIn .8s 2.55s forwards; }
 
-    #opening.active .opening-title {
-      animation: fadeIn .7s .35s forwards;
-    }
-
-    #opening.active .gift-glow {
-      animation: glowIn 1.5s .45s ease-out forwards;
-    }
-
-    #opening.active .gift {
-      animation: giftArrive .8s .25s ease-out both;
-    }
-
-    #opening.active .gift.open {
-      animation: none;
-    }
-
-    #opening.active .gift-shadow {
-      animation: shadowIn 1s .3s forwards;
-    }
-
-    #opening.active .gift.open ~ .sparkle {
-      animation: sparkleIn 1.05s 1.4s ease-out forwards;
-    }
-
-    #opening.active .opening-message {
-      animation: riseIn .8s 2s forwards;
-    }
-
-    #opening.active .opening-sub {
-      animation: fadeIn .8s 2.4s forwards;
-    }
-
-    #opening.active .confetti {
-      animation: confettiFall 2.1s 1.45s ease-in forwards;
-    }
-
-    #opening.active .c1 { left: 10%; }
-    #opening.active .c2 { left: 21%; animation-delay: 1.7s; }
-    #opening.active .c3 { left: 34%; animation-delay: 1.55s; }
-    #opening.active .c4 { left: 47%; animation-delay: 1.9s; }
-    #opening.active .c5 { left: 59%; animation-delay: 1.65s; }
-    #opening.active .c6 { left: 72%; animation-delay: 1.8s; }
-    #opening.active .c7 { left: 85%; animation-delay: 1.5s; }
-    #opening.active .c8 { left: 94%; animation-delay: 2s; }
-
-    @keyframes fadeIn {
-      to { opacity: 1; }
-    }
-
-    @keyframes glowIn {
-      0% { opacity: 0; transform: scale(.65); }
-      100% { opacity: 1; transform: scale(1.12); }
-    }
-
+    @keyframes fadeIn { to { opacity: 1; } }
     @keyframes giftArrive {
-      0% { opacity: 0; transform: translateY(12px) scale(.9); }
-      100% { opacity: 1; transform: translateY(0) scale(1); }
+      from { opacity: 0; transform: translateY(12px) scale(.94); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
     }
-
-    @keyframes giftFloat {
-      0%, 100% { transform: translateY(0) rotateY(-3deg); }
-      50% { transform: translateY(-5px) rotateY(3deg); }
+    @keyframes shadowIn { to { opacity: .75; } }
+    @keyframes glowPulse {
+      from { opacity: .25; transform: scale(.82); }
+      to { opacity: .58; transform: scale(1.08); }
     }
-
-    @keyframes shadowIn {
-      to { opacity: .7; }
-    }
-
     @keyframes lidOpen {
       0% { transform: translate(0,0) rotate(0); }
-      100% { transform: translate(-12px,-48px) rotate(-28deg); }
+      100% { transform: translate(-12px,-45px) rotate(-28deg); }
     }
-
     @keyframes bowLift {
-      to { transform: translateY(-34px) rotate(-12deg); opacity: .22; }
+      to { transform: translateY(-26px) rotate(-12deg); opacity: 0; }
     }
-
     @keyframes ribbonDrop {
-      0% { transform: translateY(0) rotate(0); }
-      100% { transform: translateY(40px) rotate(14deg); opacity: .35; }
+      0% { transform: translateY(0) rotate(0); opacity: 1; }
+      100% { transform: translateY(35px) rotate(12deg); opacity: 0; }
     }
-
     @keyframes knotLift {
-      to { transform: translateY(-24px) rotate(45deg); opacity: .3; }
+      to { transform: translateY(-22px) rotate(45deg); opacity: 0; }
     }
-
+    @keyframes flare {
+      0% { opacity: 0; transform: scale(.15); }
+      28% { opacity: 1; transform: scale(1.7); }
+      62% { opacity: .65; transform: scale(2.7); }
+      100% { opacity: 0; transform: scale(3.5); }
+    }
+    @keyframes raysExpand {
+      0% { opacity: 0; transform: scale(.55); }
+      35% { opacity: .8; transform: scale(1); }
+      100% { opacity: 0; transform: scale(1.17); }
+    }
+    @keyframes dustFloat {
+      0% { opacity: 0; transform: translate(-50%,-50%) scale(.4); }
+      25% { opacity: .8; }
+      100% {
+        opacity: 0;
+        transform: translate(calc(-50% + var(--x)),calc(-50% + var(--y))) scale(.65);
+      }
+    }
     @keyframes riseIn {
-      from { opacity: 0; transform: translateY(12px); }
+      from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes sparkleIn {
-      0% { opacity: 0; transform: scale(.4) rotate(-25deg); }
-      45% { opacity: 1; transform: scale(1.2) rotate(15deg); }
-      100% { opacity: .55; transform: scale(1) rotate(0); }
-    }
-
-    @keyframes confettiFall {
-      0% { opacity: 0; transform: translateY(-10px) rotate(0); }
-      12% { opacity: .85; }
-      100% { opacity: 0; transform: translateY(105vh) rotate(500deg); }
     }
 
     @media (max-width: 380px) {
       main { padding: 30px 19px 25px; }
       h1 { font-size: 21px; }
-      .gift-scene { transform: scale(.88); margin: 0 auto; }
+      .gift-scene { transform: scale(.88); margin-top: -5px; margin-bottom: -5px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      #opening.active *,
-      #opening.active *::before,
-      #opening.active *::after {
+      #opening.active *, #opening.active *::before, #opening.active *::after {
         animation-duration: .01ms !important;
         animation-delay: 0ms !important;
+      }
+      #opening.active .gift.open .gift-lid {
+        transform: translate(-12px,-45px) rotate(-28deg);
       }
     }
   </style>
@@ -687,7 +660,6 @@
       action="https://script.google.com/macros/s/AKfycbzCvXCrrRVTd9asGKntuhjfCd3qCXJtXPXNLRivMoAwRhEh_zyv3RV1ixGsd4JuBxylmg/exec"
     >
       <label for="memberName">会員名</label>
-
       <input
         type="text"
         name="memberName"
@@ -697,45 +669,23 @@
         placeholder="例：山田 花子"
         required
       >
-
       <input type="hidden" name="idToken" id="idToken">
-
-      <button id="drawButton" type="submit" disabled>
-        LINE認証中…
-      </button>
+      <button id="drawButton" type="submit" disabled>LINE認証中…</button>
     </form>
 
-    <p id="status" aria-live="polite">
-      LINEの認証を確認しています。
-    </p>
+    <p id="status" aria-live="polite">LINEの認証を確認しています。</p>
 
     <p class="note">
       ※抽選はお一人様1回限りです。同じLINEアカウントで再アクセスした場合は、初回の抽選結果を表示します。
     </p>
   </main>
 
-  <section id="opening" aria-hidden="true">
-    <span class="sparkle s1">✧</span>
-    <span class="sparkle s2">✦</span>
-    <span class="sparkle s3">✧</span>
-    <span class="sparkle s4">✦</span>
-    <span class="sparkle s5">✧</span>
-    <span class="sparkle s6">✦</span>
-
-    <i class="confetti c1"></i>
-    <i class="confetti c2"></i>
-    <i class="confetti c3"></i>
-    <i class="confetti c4"></i>
-    <i class="confetti c5"></i>
-    <i class="confetti c6"></i>
-    <i class="confetti c7"></i>
-    <i class="confetti c8"></i>
-
+  <section id="opening" aria-hidden="true" aria-label="プレゼントの開封演出">
     <div class="opening-content">
       <div class="opening-brand">Re:QREATOR</div>
       <div class="opening-title">5TH ANNIVERSARY</div>
 
-      <div class="gift-scene">
+      <div class="gift-scene" aria-hidden="true">
         <div class="gift-glow"></div>
         <div class="gift-shadow"></div>
 
@@ -747,6 +697,16 @@
           <div class="gift-lid"></div>
           <div class="gift-bow"></div>
           <div class="gift-knot"></div>
+        </div>
+
+        <div class="gift-flare"></div>
+        <div class="rays">
+          <i></i><i></i><i></i><i></i>
+          <i></i><i></i><i></i><i></i>
+        </div>
+        <div class="dust">
+          <i></i><i></i><i></i><i></i>
+          <i></i><i></i><i></i><i></i>
         </div>
       </div>
 
@@ -783,24 +743,24 @@
         await liff.init({ liffId: LIFF_ID });
 
         if (!liff.isLoggedIn()) {
-          status.textContent = "LINEログインが必要です。";
+          status.textContent = "LINEログインが必要です。ボタンを押してログインしてください。";
           button.textContent = "LINEでログイン";
           button.disabled = false;
+          loggedIn = false;
           return;
         }
 
         loggedIn = true;
-        status.textContent =
-          "LINEとの接続が完了しました。会員名を入力してください。";
+        status.textContent = "LINEとの接続が完了しました。会員名を入力してください。";
         button.textContent = "抽選する";
         button.disabled = false;
 
       } catch (error) {
         console.error("LIFF initialization error:", error);
-        status.textContent =
-          "LINEとの接続に失敗しました。LINE公式の抽選リンクから開き直してください。";
+        status.textContent = "LINEとの接続に失敗しました。LINE公式の抽選リンクから開き直してください。";
         button.textContent = "再接続する";
         button.disabled = false;
+
       } finally {
         initializing = false;
       }
@@ -813,18 +773,17 @@
 
       if (typeof liff !== "undefined") {
         try {
-          liff.login();
+          liff.login({ redirectUri: window.location.href });
         } catch (error) {
           console.error("LIFF login error:", error);
-          status.textContent =
-            "ログインを開始できませんでした。ページを開き直してください。";
+          status.textContent = "ログインを開始できませんでした。ページを開き直してください。";
         }
       } else {
         window.location.reload();
       }
     });
 
-    form.addEventListener("submit", async function(event) {
+    form.addEventListener("submit", function(event) {
       event.preventDefault();
 
       if (submitting) return;
@@ -837,21 +796,19 @@
         return;
       }
 
-      try {
-        if (typeof liff === "undefined" || !liff.isLoggedIn()) {
-          status.textContent = "LINEログインが必要です。";
-          button.textContent = "LINEでログイン";
-          button.disabled = false;
-          loggedIn = false;
-          return;
-        }
+      if (!loggedIn || typeof liff === "undefined" || !liff.isLoggedIn()) {
+        status.textContent = "LINEログインが必要です。";
+        button.textContent = "LINEでログイン";
+        button.disabled = false;
+        loggedIn = false;
+        return;
+      }
 
+      try {
         const token = liff.getIDToken();
 
         if (!token) {
-          throw new Error(
-            "LINEの認証情報を取得できませんでした。抽選リンクから開き直してください。"
-          );
+          throw new Error("LINEの認証情報を取得できませんでした。抽選リンクから開き直してください。");
         }
 
         idTokenInput.value = token;
@@ -864,39 +821,30 @@
 
         opening.classList.add("active");
         opening.setAttribute("aria-hidden", "false");
-
-        /*
-         * ギフトボックスが開く演出を見せてから送信します。
-         * 実際の抽選・重複判定・景品管理はGoogle Apps Script側で行います。
-         */
         giftBox.classList.add("open");
 
         const reducedMotion = window.matchMedia(
           "(prefers-reduced-motion: reduce)"
         ).matches;
 
-        const animationDuration = reducedMotion ? 500 : 3600;
+        const animationDuration = reducedMotion ? 900 : 4100;
 
         window.setTimeout(function() {
-          /*
-           * HTMLFormElement.submit()を明示的に呼び出し、
-           * 送信処理がボタン要素によって上書きされないようにします。
-           */
           HTMLFormElement.prototype.submit.call(form);
         }, animationDuration);
 
       } catch (error) {
         console.error("Draw submission error:", error);
-        status.textContent =
-          error && error.message
-            ? error.message
-            : "処理に失敗しました。";
+        status.textContent = error && error.message
+          ? error.message
+          : "処理に失敗しました。";
 
         submitting = false;
         button.disabled = false;
         button.textContent = "もう一度試す";
         opening.classList.remove("active");
         opening.setAttribute("aria-hidden", "true");
+        giftBox.classList.remove("open");
       }
     });
 
