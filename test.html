@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -147,4 +148,108 @@
     const LIFF_ID = "1656435814-rLbpktXX";
 
     const form = document.getElementById("drawForm");
-    const memberNameInput = document.get
+    const memberNameInput = document.getElementById("memberName");
+    const button = document.getElementById("drawButton");
+    const status = document.getElementById("status");
+    const idTokenInput = document.getElementById("idToken");
+
+    let initializing = false;
+    let submitting = false;
+
+    async function start() {
+      if (initializing) return;
+      initializing = true;
+
+      try {
+        if (typeof liff === "undefined") {
+          throw new Error("LINEの認証プログラムを読み込めませんでした。");
+        }
+
+        status.textContent = "LINEとの接続を確認しています。";
+
+        await liff.init({ liffId: LIFF_ID });
+
+        if (!liff.isLoggedIn()) {
+          status.textContent = "LINEログインが必要です。";
+          button.textContent = "LINEでログイン";
+          button.disabled = false;
+
+          button.onclick = () => {
+            liff.login();
+          };
+
+          return;
+        }
+
+        status.textContent = "LINEとの接続が完了しました。会員名を入力してください。";
+        button.textContent = "抽選する";
+        button.disabled = false;
+        button.onclick = null;
+      } catch (error) {
+        console.error("LIFF initialization error:", error);
+
+        status.textContent =
+          "LINEとの接続に失敗しました。LINE公式の抽選リンクから開き直してください。";
+
+        button.textContent = "再接続する";
+        button.disabled = false;
+        button.onclick = () => {
+          window.location.reload();
+        };
+      } finally {
+        initializing = false;
+      }
+    }
+
+    form.addEventListener("submit", async function(event) {
+      event.preventDefault();
+
+      if (submitting) return;
+
+      if (!memberNameInput.value.trim()) {
+        status.textContent = "会員名を入力してください。";
+        memberNameInput.focus();
+        return;
+      }
+
+      submitting = true;
+      button.disabled = true;
+      button.textContent = "抽選準備中…";
+      status.textContent = "LINEの認証情報を確認しています。";
+
+      try {
+        if (!liff.isLoggedIn()) {
+          status.textContent = "LINEログインが必要です。";
+          submitting = false;
+          button.disabled = false;
+          button.textContent = "LINEでログイン";
+          button.onclick = () => liff.login();
+          return;
+        }
+
+        const token = liff.getIDToken();
+
+        if (!token) {
+          throw new Error("LINEの認証情報を取得できませんでした。抽選リンクから開き直してください。");
+        }
+
+        idTokenInput.value = token;
+        memberNameInput.value = memberNameInput.value.trim();
+
+        status.textContent = "抽選ページへ移動しています。";
+
+        form.submit();
+      } catch (error) {
+        console.error("Draw submission error:", error);
+
+        status.textContent = error.message || "処理に失敗しました。";
+        submitting = false;
+        button.disabled = false;
+        button.textContent = "もう一度試す";
+      }
+    });
+
+    start();
+  </script>
+</body>
+</html>
