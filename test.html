@@ -4,48 +4,105 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f3eb">
   <title>Re:QREATOR 5周年記念プレゼント抽選</title>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 
   <style>
     * { box-sizing: border-box; }
 
+    :root {
+      --ivory: #f7f3eb;
+      --paper: #fffdf9;
+      --gold: #c5a267;
+      --gold-light: #ead8ad;
+      --gold-dark: #96733c;
+      --ink: #40382d;
+      --muted: #82796d;
+    }
+
     body {
       margin: 0;
+      min-height: 100vh;
       padding: 24px 16px;
-      background: #f7f5f0;
-      color: #292929;
-      font-family: sans-serif;
+      background:
+        radial-gradient(ellipse at 50% 0%, #fffdf9 0%, transparent 68%),
+        var(--ivory);
+      color: var(--ink);
+      font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
     }
 
     main {
-      max-width: 440px;
-      margin: 30px auto;
-      padding: 30px 22px;
-      background: #fff;
-      border-radius: 16px;
+      position: relative;
+      max-width: 460px;
+      margin: 22px auto;
+      padding: 36px 25px 30px;
+      overflow: hidden;
+      background: rgba(255,253,249,.96);
+      border: 1px solid #e7dcc8;
+      border-radius: 4px;
       text-align: center;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+      box-shadow: 0 12px 38px rgba(110,86,48,.08);
+    }
+
+    main::before {
+      content: "";
+      position: absolute;
+      inset: 8px;
+      border: 1px solid rgba(197,162,103,.24);
+      pointer-events: none;
     }
 
     .brand {
-      color: #b87832;
+      position: relative;
+      color: var(--gold-dark);
+      font-family: Georgia, serif;
       font-size: 13px;
-      letter-spacing: 3px;
+      letter-spacing: 4px;
+    }
+
+    .anniversary {
+      margin-top: 28px;
+      color: var(--gold-dark);
+      font-family: Georgia, serif;
+      font-size: 11px;
+      letter-spacing: 4px;
+    }
+
+    .number-five {
+      margin: 5px 0 -3px;
+      color: #c8a568;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(78px, 20vw, 108px);
+      font-weight: normal;
+      line-height: 1.05;
+      text-shadow: 1px 2px 0 #f3e6c9;
     }
 
     h1 {
-      margin: 22px 0;
+      margin: 10px 0 22px;
       font-size: 23px;
+      font-weight: 500;
+      letter-spacing: 2px;
     }
 
-    p { line-height: 1.8; }
+    .intro {
+      font-size: 14px;
+      line-height: 2;
+    }
+
+    .divider {
+      width: 46px;
+      height: 1px;
+      margin: 23px auto;
+      background: var(--gold);
+    }
 
     label {
       display: block;
-      margin: 24px 0 8px;
+      margin: 25px 0 9px;
       text-align: left;
-      font-size: 15px;
+      font-size: 14px;
       font-weight: bold;
     }
 
@@ -54,51 +111,396 @@
       width: 100%;
       min-height: 50px;
       padding: 12px;
-      border: 1px solid #b8ad9b;
-      border-radius: 8px;
+      border: 1px solid #d8cbb6;
+      border-radius: 2px;
       background: #fff;
-      color: #292929;
+      color: var(--ink);
       font-size: 16px;
-      -webkit-appearance: none;
       appearance: none;
     }
 
     input[type="text"]:focus {
-      outline: 2px solid #b87832;
+      outline: 2px solid var(--gold);
       outline-offset: 2px;
     }
 
     button {
       display: block;
       width: 100%;
-      min-height: 52px;
+      min-height: 54px;
       margin-top: 22px;
-      padding: 12px;
-      border: none;
-      border-radius: 8px;
-      background: #b87832;
-      color: #fff;
-      font-size: 16px;
+      padding: 13px;
+      border: 1px solid #b79559;
+      border-radius: 2px;
+      background: linear-gradient(115deg, #b28b4e, #ddc18a 50%, #b28b4e);
+      color: #fffdf8;
+      font-size: 15px;
       font-weight: bold;
+      letter-spacing: 2px;
       cursor: pointer;
     }
 
     button:disabled {
-      opacity: 0.6;
+      opacity: .58;
       cursor: not-allowed;
     }
 
     #status {
       margin-top: 18px;
       overflow-wrap: anywhere;
-      font-size: 14px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.8;
     }
 
     .note {
-      margin-top: 18px;
-      color: #666;
-      font-size: 12px;
+      margin-top: 24px;
+      color: #81796e;
+      font-size: 11px;
+      line-height: 1.9;
       text-align: left;
+    }
+
+    /* ギフトボックス演出 */
+    #opening {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse at center, #fffdf7 0%, #f6efdf 72%, #eee3cf 100%);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    #opening.active {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .opening-content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      text-align: center;
+    }
+
+    .opening-brand {
+      color: var(--gold-dark);
+      font-family: Georgia, serif;
+      font-size: 12px;
+      letter-spacing: 4px;
+      opacity: 0;
+    }
+
+    .opening-title {
+      margin-top: 15px;
+      color: #9e7b45;
+      font-family: Georgia, serif;
+      font-size: 11px;
+      letter-spacing: 4px;
+      opacity: 0;
+    }
+
+    .gift-scene {
+      position: relative;
+      width: 240px;
+      height: 240px;
+      margin: 18px auto 4px;
+      display: grid;
+      place-items: center;
+    }
+
+    .gift-glow {
+      position: absolute;
+      width: 190px;
+      height: 190px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(239,213,155,.72), rgba(239,213,155,0) 70%);
+      opacity: 0;
+      transform: scale(.6);
+    }
+
+    .gift {
+      position: relative;
+      width: 148px;
+      height: 130px;
+      margin-top: 35px;
+    }
+
+    .gift-body {
+      position: absolute;
+      left: 7px;
+      bottom: 0;
+      width: 134px;
+      height: 92px;
+      overflow: hidden;
+      border: 1px solid #b9985c;
+      background: linear-gradient(135deg, #f3e4c3, #d8bc82 48%, #c4a267);
+      box-shadow: 0 12px 22px rgba(137,104,49,.15);
+    }
+
+    .gift-body::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 57px;
+      width: 19px;
+      background: linear-gradient(90deg, #b38d4c, #f7e8c4, #b38d4c);
+    }
+
+    .gift-body::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 8px;
+      background: rgba(255,255,255,.24);
+    }
+
+    .gift-lid {
+      position: absolute;
+      z-index: 3;
+      top: 21px;
+      left: 0;
+      width: 148px;
+      height: 27px;
+      border: 1px solid #b9985c;
+      background: linear-gradient(110deg, #f3e5c8, #d7b97c 52%, #c3a064);
+      transform-origin: 10% 100%;
+    }
+
+    .gift-lid::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 63px;
+      width: 19px;
+      background: linear-gradient(90deg, #b38d4c, #f7e8c4, #b38d4c);
+    }
+
+    .gift-ribbon {
+      position: absolute;
+      z-index: 4;
+      top: 0;
+      left: 65px;
+      width: 18px;
+      height: 130px;
+      background: linear-gradient(90deg, #b38d4c, #fff0ca, #c3a064);
+      transform-origin: 50% 25%;
+    }
+
+    .gift-bow {
+      position: absolute;
+      z-index: 5;
+      top: -9px;
+      left: 49px;
+      width: 48px;
+      height: 25px;
+      transform-origin: 50% 100%;
+    }
+
+    .gift-bow::before,
+    .gift-bow::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      width: 25px;
+      height: 18px;
+      border: 1px solid #b38d4c;
+      background: linear-gradient(135deg, #f8e9c7, #c7a466);
+      border-radius: 80% 15% 70% 20%;
+    }
+
+    .gift-bow::before {
+      left: 0;
+      transform: rotate(25deg);
+    }
+
+    .gift-bow::after {
+      right: 0;
+      transform: scaleX(-1) rotate(25deg);
+    }
+
+    .gift-knot {
+      position: absolute;
+      z-index: 6;
+      top: 5px;
+      left: 68px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #f5e4bd;
+      border: 1px solid #b38d4c;
+    }
+
+    .opening-message {
+      margin-top: 14px;
+      color: #8e7449;
+      font-size: 13px;
+      letter-spacing: 2px;
+      opacity: 0;
+    }
+
+    .opening-sub {
+      margin-top: 10px;
+      color: #a59a87;
+      font-size: 11px;
+      letter-spacing: 1px;
+      opacity: 0;
+    }
+
+    .sparkle {
+      position: absolute;
+      z-index: 1;
+      color: #c6a05e;
+      font-family: Georgia, serif;
+      font-size: 23px;
+      opacity: 0;
+    }
+
+    .s1 { top: 19%; left: 20%; }
+    .s2 { top: 27%; right: 18%; font-size: 17px; }
+    .s3 { top: 57%; left: 14%; font-size: 15px; }
+    .s4 { top: 60%; right: 15%; font-size: 24px; }
+    .s5 { top: 39%; right: 12%; font-size: 12px; }
+
+    .confetti {
+      position: absolute;
+      top: -20px;
+      z-index: 1;
+      width: 6px;
+      height: 11px;
+      background: #c6a05e;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .confetti:nth-of-type(2n) {
+      width: 4px;
+      height: 7px;
+      background: #ead8ad;
+    }
+
+    #opening.active .opening-brand {
+      animation: fadeIn .7s .1s forwards;
+    }
+
+    #opening.active .opening-title {
+      animation: fadeIn .7s .35s forwards;
+    }
+
+    #opening.active .gift-glow {
+      animation: glowIn 1.4s .5s forwards;
+    }
+
+    #opening.active .gift-bow {
+      animation: bowUp .65s 1.1s forwards;
+    }
+
+    #opening.active .gift-lid {
+      animation: lidOpen .9s 1.3s forwards;
+    }
+
+    #opening.active .gift-ribbon {
+      animation: ribbonDrop .8s 1.05s forwards;
+    }
+
+    #opening.active .gift-knot {
+      animation: knotLift .7s 1.1s forwards;
+    }
+
+    #opening.active .opening-message {
+      animation: riseIn .8s 2s forwards;
+    }
+
+    #opening.active .opening-sub {
+      animation: fadeIn .8s 2.4s forwards;
+    }
+
+    #opening.active .sparkle {
+      animation: sparkleIn 1s 1.5s forwards;
+    }
+
+    #opening.active .confetti {
+      animation: confettiFall 2.1s 1.4s ease-in forwards;
+    }
+
+    #opening.active .c1 { left: 12%; }
+    #opening.active .c2 { left: 24%; animation-delay: 1.7s; }
+    #opening.active .c3 { left: 38%; animation-delay: 1.5s; }
+    #opening.active .c4 { left: 54%; animation-delay: 1.9s; }
+    #opening.active .c5 { left: 68%; animation-delay: 1.6s; }
+    #opening.active .c6 { left: 82%; animation-delay: 1.8s; }
+    #opening.active .c7 { left: 92%; animation-delay: 1.45s; }
+    #opening.active .c8 { left: 45%; animation-delay: 2s; }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    @keyframes glowIn {
+      0% { opacity: 0; transform: scale(.6); }
+      100% { opacity: 1; transform: scale(1.25); }
+    }
+
+    @keyframes bowUp {
+      to { transform: translateY(-35px) rotate(-12deg); opacity: .2; }
+    }
+
+    @keyframes lidOpen {
+      0% { transform: translateY(0) rotate(0); }
+      100% { transform: translate(-12px,-48px) rotate(-28deg); }
+    }
+
+    @keyframes ribbonDrop {
+      0% { transform: translateY(0) rotate(0); }
+      100% { transform: translateY(42px) rotate(15deg); opacity: .35; }
+    }
+
+    @keyframes knotLift {
+      to { transform: translateY(-25px) rotate(25deg); opacity: .3; }
+    }
+
+    @keyframes riseIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes sparkleIn {
+      0% { opacity: 0; transform: scale(.4) rotate(-25deg); }
+      45% { opacity: 1; transform: scale(1.2) rotate(15deg); }
+      100% { opacity: .55; transform: scale(1) rotate(0); }
+    }
+
+    @keyframes confettiFall {
+      0% { opacity: 0; transform: translateY(-10px) rotate(0); }
+      12% { opacity: .9; }
+      100% { opacity: 0; transform: translateY(105vh) rotate(500deg); }
+    }
+
+    @media (max-width: 380px) {
+      main { padding: 30px 19px 25px; }
+      h1 { font-size: 21px; }
+      .gift-scene { transform: scale(.9); margin: 5px auto; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      #opening.active * {
+        animation-duration: .01ms !important;
+        animation-delay: 0ms !important;
+      }
     }
   </style>
 </head>
@@ -106,10 +508,17 @@
 <body>
   <main>
     <div class="brand">Re:QREATOR</div>
+    <div class="anniversary">5TH ANNIVERSARY</div>
+    <div class="number-five" aria-hidden="true">5</div>
+    <h1>5周年記念プレゼント抽選</h1>
 
-    <h1>プレゼント抽選</h1>
+    <p class="intro">
+      いつもご利用いただき、ありがとうございます。<br>
+      5年間の感謝を込めて、プレゼントをご用意しました。<br>
+      ぜひ抽選にご参加ください。
+    </p>
 
-    <p>会員名を入力して、抽選にご参加ください。</p>
+    <div class="divider"></div>
 
     <form
       id="drawForm"
@@ -144,6 +553,43 @@
     </p>
   </main>
 
+  <section id="opening" aria-hidden="true">
+    <span class="sparkle s1">✧</span>
+    <span class="sparkle s2">✦</span>
+    <span class="sparkle s3">✧</span>
+    <span class="sparkle s4">✦</span>
+    <span class="sparkle s5">✧</span>
+
+    <i class="confetti c1"></i>
+    <i class="confetti c2"></i>
+    <i class="confetti c3"></i>
+    <i class="confetti c4"></i>
+    <i class="confetti c5"></i>
+    <i class="confetti c6"></i>
+    <i class="confetti c7"></i>
+    <i class="confetti c8"></i>
+
+    <div class="opening-content">
+      <div class="opening-brand">Re:QREATOR</div>
+      <div class="opening-title">5TH ANNIVERSARY</div>
+
+      <div class="gift-scene" aria-label="金色のリボンがかかったギフトボックス">
+        <div class="gift-glow"></div>
+
+        <div class="gift">
+          <div class="gift-body"></div>
+          <div class="gift-ribbon"></div>
+          <div class="gift-lid"></div>
+          <div class="gift-bow"></div>
+          <div class="gift-knot"></div>
+        </div>
+      </div>
+
+      <div class="opening-message">感謝を込めた贈りもの</div>
+      <div class="opening-sub">あなたへのプレゼントをお届けします</div>
+    </div>
+  </section>
+
   <script>
     const LIFF_ID = "1656435814-rLbpktXX";
 
@@ -152,6 +598,7 @@
     const button = document.getElementById("drawButton");
     const status = document.getElementById("status");
     const idTokenInput = document.getElementById("idToken");
+    const opening = document.getElementById("opening");
 
     let initializing = false;
     let submitting = false;
@@ -166,34 +613,32 @@
         }
 
         status.textContent = "LINEとの接続を確認しています。";
-
         await liff.init({ liffId: LIFF_ID });
 
         if (!liff.isLoggedIn()) {
           status.textContent = "LINEログインが必要です。";
           button.textContent = "LINEでログイン";
           button.disabled = false;
-
-          button.onclick = () => {
+          button.onclick = (event) => {
+            event.preventDefault();
             liff.login();
           };
-
           return;
         }
 
-        status.textContent = "LINEとの接続が完了しました。会員名を入力してください。";
+        status.textContent =
+          "LINEとの接続が完了しました。会員名を入力してください。";
         button.textContent = "抽選する";
         button.disabled = false;
         button.onclick = null;
       } catch (error) {
         console.error("LIFF initialization error:", error);
-
         status.textContent =
           "LINEとの接続に失敗しました。LINE公式の抽選リンクから開き直してください。";
-
         button.textContent = "再接続する";
         button.disabled = false;
-        button.onclick = () => {
+        button.onclick = (event) => {
+          event.preventDefault();
           window.location.reload();
         };
       } finally {
@@ -212,36 +657,49 @@
         return;
       }
 
-      submitting = true;
-      button.disabled = true;
-      button.textContent = "抽選準備中…";
-      status.textContent = "LINEの認証情報を確認しています。";
-
       try {
-        if (!liff.isLoggedIn()) {
+        if (typeof liff === "undefined" || !liff.isLoggedIn()) {
           status.textContent = "LINEログインが必要です。";
-          submitting = false;
-          button.disabled = false;
           button.textContent = "LINEでログイン";
-          button.onclick = () => liff.login();
+          button.disabled = false;
+          button.onclick = (event) => {
+            event.preventDefault();
+            liff.login();
+          };
           return;
         }
 
         const token = liff.getIDToken();
 
         if (!token) {
-          throw new Error("LINEの認証情報を取得できませんでした。抽選リンクから開き直してください。");
+          throw new Error(
+            "LINEの認証情報を取得できませんでした。抽選リンクから開き直してください。"
+          );
         }
 
         idTokenInput.value = token;
         memberNameInput.value = memberNameInput.value.trim();
 
-        status.textContent = "抽選ページへ移動しています。";
+        submitting = true;
+        button.disabled = true;
+        button.textContent = "プレゼントを準備しています…";
+        status.textContent = "感謝を込めたプレゼントを準備しています。";
 
-        form.submit();
+        opening.classList.add("active");
+        opening.setAttribute("aria-hidden", "false");
+
+        const reducedMotion = window.matchMedia(
+          "(prefers-reduced-motion: reduce)"
+        ).matches;
+
+        const animationDuration = reducedMotion ? 500 : 3600;
+
+        window.setTimeout(() => {
+          form.submit();
+        }, animationDuration);
+
       } catch (error) {
         console.error("Draw submission error:", error);
-
         status.textContent = error.message || "処理に失敗しました。";
         submitting = false;
         button.disabled = false;
