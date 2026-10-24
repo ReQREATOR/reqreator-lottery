@@ -772,9 +772,10 @@
         }
 
         loggedIn = true;
-        status.innerHTML =
-          '会員名を入力してください。<br>' +
-          '※2026年11月時点でプラン契約をされている会員様のみご参加頂けます。';
+
+        // 重複していた案内文を下側には表示しない
+        status.textContent = "";
+
         button.textContent = "抽選する";
         button.disabled = false;
 
